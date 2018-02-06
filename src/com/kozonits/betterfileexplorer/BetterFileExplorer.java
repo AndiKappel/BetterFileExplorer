@@ -38,11 +38,13 @@ public class BetterFileExplorer {
     private static boolean selected_changes = false;
     private static String current_path = "D:";
     
-    private static String[] path_history = new String[100];
-    private static int path_history_anz = 0;
-    private static int path_history_display = -1;
+    //private static String[] path_history = new String[100];
+    //private static int path_history_anz = 0;
+    //private static int path_history_display = -1;
     
-    private static boolean PATH_HISTORY_IGNORED = false;
+    private static String history;
+    private static String curr_history;
+    
     private static boolean PATH_CHANGED_EVENT = false;
     
     private static long end_time = -1;
@@ -88,7 +90,8 @@ public class BetterFileExplorer {
         
         File folder = new File(current_path);
         window.path.setText(folder.toString());
-        addPathToHistory(current_path);
+        updateHistory(curr_history);
+        
         try {
             listFilesForFolder(folder);
         } catch (FolderEmptyException e) {
@@ -103,13 +106,12 @@ public class BetterFileExplorer {
         displayFilesAndFolder(window, folder);
         
         while (true) {
-            long start = System.nanoTime();
+            long start = System.nanoTime(); //START-TIME for FRAME-CALCULATION
+            
             if (((!current_path.equals(window.path.getText()) && window.changes == 1) || selected_changes) || PATH_CHANGED_EVENT) {
                 
-                if (!PATH_HISTORY_IGNORED)
-                    addPathToHistory(current_path);
-                PATH_HISTORY_IGNORED = false;
-                
+                updateHistory(curr_history);
+
                 selected_changes = false;
                 //current_path = window.path.getText();
                 folder = new File(current_path);
@@ -133,7 +135,10 @@ public class BetterFileExplorer {
                 if (folders[window.SELECTED_PATH] == null || new File(folders[window.SELECTED_PATH]).isFile()) {
                     printMessage(window, 1, "Cannot open this File/Folder!", 2000);
                 } else {
-                    current_path = folder + "\\" + folders[window.SELECTED_PATH] + "\\";
+                    if (current_path.substring(current_path.length()-1).equals("\\"))
+                        current_path = folder + folders[window.SELECTED_PATH] + "\\";
+                    else
+                        current_path = folder + "\\" + folders[window.SELECTED_PATH] + "\\";
                     PATH_CHANGED_EVENT = true;
                 }
                 System.out.println("Path: " + current_path);
@@ -141,38 +146,27 @@ public class BetterFileExplorer {
             }
             
             if (window.PATH_CHANGED_NEXT == true) {
-                String buffer;
-                buffer = getPathNext();
-                if (buffer != null) {
-                    current_path = buffer;
-                    PATH_CHANGED_EVENT = true;
-                    PATH_HISTORY_IGNORED = true;
-                }
-                window.PATH_CHANGED_NEXT = false;
+
+                
+                
             }
             
             if (window.PATH_CHANGED_PARENT == true) {
                 String buffer;
-                buffer = getPathParent();
+                buffer = new File(current_path).getParent();
+                System.out.println("Buffer: " + buffer + " Current_path: " + current_path);
                 if (buffer != null) {
                     current_path = buffer;
                     PATH_CHANGED_EVENT = true;
-                    PATH_HISTORY_IGNORED = true;
                 }
-                
-                System.out.println("Anz: " + path_history_anz + " Display: " + path_history_display);
-                for (String s: path_history) {
-                    if (s != null)
-                        System.out.println("s > " + s);
-                }
-                System.out.println("---------------------------------------------");
                 window.PATH_CHANGED_PARENT = false;
             }
             
             if (end_time < System.currentTimeMillis() && end_time != -1) {
                 resetMessage(window);
             }
-            while((System.nanoTime()-start) < 16000);
+            
+            while((System.nanoTime()-start) < 16000); //END-TIME and CHECK for FRAME-CALCULATION -> 16000 ns = max. 60fps
         }
     }
     
@@ -253,7 +247,18 @@ public class BetterFileExplorer {
         win.stateText.setText("Nothing Selected!");
     }
     
-    public static void addPathToHistory(String path) {
+    public static void updateHistory(String path) {
+        if (history == null)
+            history = path;
+        else {
+            if (history.contains(path))
+                return;
+            else
+                history = path;
+        }
+    }
+    
+    /*public static void addPathToHistory(String path) {
         if (path_history_anz < 99) {
             if (path_history_anz == 0 || !path_history[path_history_anz-1].equals(path)) {
                 path_history[path_history_anz] = path;
@@ -291,5 +296,5 @@ public class BetterFileExplorer {
         }
         path_history_display++;
         return path_history[path_history_display];
-    }
+    }*/
 }
