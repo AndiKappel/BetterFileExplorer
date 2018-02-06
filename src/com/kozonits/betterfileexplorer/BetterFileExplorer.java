@@ -42,6 +42,7 @@ public class BetterFileExplorer {
     private static int path_history_anz = 0;
     private static int path_history_display = -1;
     
+    private static boolean PATH_HISTORY_IGNORED = false;
     private static boolean PATH_CHANGED_EVENT = false;
     
     private static long end_time = -1;
@@ -87,6 +88,7 @@ public class BetterFileExplorer {
         
         File folder = new File(current_path);
         window.path.setText(folder.toString());
+        addPathToHistory(current_path);
         try {
             listFilesForFolder(folder);
         } catch (FolderEmptyException e) {
@@ -104,7 +106,9 @@ public class BetterFileExplorer {
             long start = System.nanoTime();
             if (((!current_path.equals(window.path.getText()) && window.changes == 1) || selected_changes) || PATH_CHANGED_EVENT) {
                 
-                addPathToHistory(current_path);
+                if (!PATH_HISTORY_IGNORED)
+                    addPathToHistory(current_path);
+                PATH_HISTORY_IGNORED = false;
                 
                 selected_changes = false;
                 //current_path = window.path.getText();
@@ -131,7 +135,6 @@ public class BetterFileExplorer {
                 } else {
                     current_path = folder + "\\" + folders[window.SELECTED_PATH] + "\\";
                     PATH_CHANGED_EVENT = true;
-                    
                 }
                 System.out.println("Path: " + current_path);
                 window.PATH_CHANGED = false;
@@ -143,7 +146,9 @@ public class BetterFileExplorer {
                 if (buffer != null) {
                     current_path = buffer;
                     PATH_CHANGED_EVENT = true;
+                    PATH_HISTORY_IGNORED = true;
                 }
+                window.PATH_CHANGED_NEXT = false;
             }
             
             if (window.PATH_CHANGED_PARENT == true) {
@@ -152,7 +157,16 @@ public class BetterFileExplorer {
                 if (buffer != null) {
                     current_path = buffer;
                     PATH_CHANGED_EVENT = true;
+                    PATH_HISTORY_IGNORED = true;
                 }
+                
+                System.out.println("Anz: " + path_history_anz + " Display: " + path_history_display);
+                for (String s: path_history) {
+                    if (s != null)
+                        System.out.println("s > " + s);
+                }
+                System.out.println("---------------------------------------------");
+                window.PATH_CHANGED_PARENT = false;
             }
             
             if (end_time < System.currentTimeMillis() && end_time != -1) {
@@ -262,6 +276,7 @@ public class BetterFileExplorer {
                 return path_history[path_history_display];
             }
             else {
+                path_history_display = -1;
                 return null;
             }
         }
