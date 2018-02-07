@@ -1,39 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.kozonits.betterfileexplorer;
 
 import static com.kozonits.betterfileexplorer.Utilities.getSizeOfFile;
 import static com.kozonits.betterfileexplorer.Utilities.getSizeOfFolder;
-import com.sun.corba.se.spi.activation._ActivatorImplBase;
-import com.sun.java.swing.plaf.windows.resources.windows;
-import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.scene.control.ScrollBar;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-/**
- *
- * @author marce
+/*
+ * @project BetterFileExplorer
+ * @author @MKozonits on GitHub/Twitter
  */
-public class BetterFileExplorer {
 
-    /**
-     * @param args the command line arguments
-     */
+public class BetterFileExplorer {
     
     private static String[] files;
     private static String[] folders;
@@ -43,10 +28,6 @@ public class BetterFileExplorer {
     private static String current_path = "D:";
     private static String old_path = "D:";
     
-    //private static String[] path_history = new String[100];
-    //private static int path_history_anz = 0;
-    //private static int path_history_display = -1;
-    
     private static String history;
     private static String curr_history;
     
@@ -54,7 +35,7 @@ public class BetterFileExplorer {
     
     private static long end_time = -1;
     
-    private static ImageIcon icon_folder = new ImageIcon("ordner_list.png");
+    private static final ImageIcon icon_folder = new ImageIcon("ordner_list.png");
     
     public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException, IOException {
         
@@ -79,19 +60,6 @@ public class BetterFileExplorer {
         tcm.getColumn(2).setPreferredWidth(80);      //EXT
         tcm.getColumn(3).setPreferredWidth(80);      //Size
         tcm.getColumn(4).setPreferredWidth(200);     //Sonst.
-        
-        /*window.jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-            public void valueChanged(ListSelectionEvent event) {
-                if (window.jTable1.getValueAt(window.jTable1.getSelectedRow(), 2).toString().equals("Ordner")) {
-                    current_path = current_path + window.jTable1.getValueAt(window.jTable1.getSelectedRow(), 1);
-                    System.out.println("Current_path: " + current_path);
-                    selected_changes = true;
-                }
-                else {
-                    System.out.println("Test1: " + window.jTable1.getValueAt(window.jTable1.getSelectedRow(), 1));
-                }
-            }
-        });*/
         
         File folder = new File(current_path);
         window.path.setText(folder.toString());
@@ -122,7 +90,7 @@ public class BetterFileExplorer {
                 updateHistory(curr_history);
 
                 selected_changes = false;
-                //current_path = window.path.getText();
+
                 folder = new File(current_path);
                 try {
                     listFilesForFolder(folder);
@@ -211,7 +179,7 @@ public class BetterFileExplorer {
     
     public static void displayFilesAndFolder(MainWindow window, File folder) {
         int i = 0;
-        //DefaultTableModel dtm = (DefaultTableModel) window.jTable1.getModel();
+
         for (i = 0; i < anz_folders; i++) {
             folders[i] = folders[i].substring(folder.toString().length()+1, folders[i].length());
             window.jTable1.getModel().setValueAt(folders[i], i, 1);
@@ -221,10 +189,10 @@ public class BetterFileExplorer {
             if (Utilities.getHidden(new File(folder + folders[i]))) {
                 window.jTable1.getModel().setValueAt("Versteckter Ordner", i, 4);
             }
-            //window.jTable1.getModel().setValueAt((ImageIcon)icon_folder, i, 0);
+
         }
         for (i = 0; i < anz_files; i++) {
-            //System.out.println(files[i] + " <- files[i]");
+
             files[i] = files[i].substring(folder.toString().length()+1, files[i].length());
             window.jTable1.getModel().setValueAt(files[i], i + anz_folders, 1);
             window.jTable1.getModel().setValueAt("", i, 4);
@@ -254,7 +222,6 @@ public class BetterFileExplorer {
                 window.jTable1.getModel().setValueAt(att, i + anz_folders, 2);
             }
         }
-        //dtm.addColumn(new Object[] { icon_folder, icon_folder, icon_folder, icon_folder, icon_folder });
     }
     
     public static void listFilesForFolder(final File folder) throws FolderEmptyException, IsNotAFolderException {
@@ -271,16 +238,13 @@ public class BetterFileExplorer {
         for (final File fileEntry : folder.listFiles()) {
             if (!fileEntry.equals("")) {
                 if (fileEntry.isFile()) {
-                    //listFilesForFolder(fileEntry);
+
                     files[i_files] = fileEntry.toString();
-                    //System.out.println(files[i_files] + " " + fileEntry.toString());
+
                     i_files++;
                 } else {
-                    //if (!fileEntry.toString().contains(".man") && !fileEntry.toString().contains(".mui") && !fileEntry.toString().contains(".ttf") && !fileEntry.toString().contains(".dll")) {
-                        //System.out.println(fileEntry.getName());
-                        folders[i_folders] = fileEntry.toString();
-                        i_folders++;
-                    //}
+                    folders[i_folders] = fileEntry.toString();
+                    i_folders++;
                 }
             }
         }
@@ -320,44 +284,4 @@ public class BetterFileExplorer {
                 history = path;
         }
     }
-    
-    /*public static void addPathToHistory(String path) {
-        if (path_history_anz < 99) {
-            if (path_history_anz == 0 || !path_history[path_history_anz-1].equals(path)) {
-                path_history[path_history_anz] = path;
-                path_history_anz++;
-            }
-        }
-    }
-    
-    public static String getPathParent() {
-        if (path_history_display == -1) {
-            if (path_history_anz > 0) {
-                path_history_display = path_history_anz - 1;
-                return path_history[path_history_display];
-            } else
-                return null;
-        }
-        else {
-            if (path_history_display >= 1 && path_history_display - 1 < path_history_anz) {
-                path_history_display--;
-                return path_history[path_history_display];
-            }
-            else {
-                path_history_display = -1;
-                return null;
-            }
-        }
-    }
-    
-    public static String getPathNext() {
-        if (path_history_display == -1)
-            return null;
-        if (path_history_display + 2 > path_history_anz) {
-            path_history_display = -1;
-            return null;
-        }
-        path_history_display++;
-        return path_history[path_history_display];
-    }*/
 }
