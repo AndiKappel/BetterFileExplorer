@@ -50,6 +50,8 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         initDragEvent();
+        ComponentResizer cr = new ComponentResizer();
+        cr.registerComponent(this);
     }
     
     private void initDragEvent() {
