@@ -73,11 +73,15 @@ public class Utilities {
     
     public static long getSizeOfFolder(File directory){
         long length = 0;
-        for (File file : directory.listFiles()) {
-            if (file.isFile())
-                length += file.length();
-            else
-                length += getSizeOfFile(directory);
+        if (directory == null)
+            return length;
+        if (directory.listFiles() != null) {
+            for (File file : directory.listFiles()) {
+                if (file.isFile())
+                    length += file.length();
+                else
+                    length += getSizeOfFile(directory);
+            }
         }
         return length;
     }

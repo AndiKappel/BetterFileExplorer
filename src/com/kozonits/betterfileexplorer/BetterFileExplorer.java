@@ -6,6 +6,7 @@
 package com.kozonits.betterfileexplorer;
 
 import static com.kozonits.betterfileexplorer.Utilities.getSizeOfFile;
+import static com.kozonits.betterfileexplorer.Utilities.getSizeOfFolder;
 import com.sun.corba.se.spi.activation._ActivatorImplBase;
 import com.sun.java.swing.plaf.windows.resources.windows;
 import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
@@ -40,6 +41,7 @@ public class BetterFileExplorer {
     private static int anz_folders = 0;
     private static boolean selected_changes = false;
     private static String current_path = "D:";
+    private static String old_path = "D:";
     
     //private static String[] path_history = new String[100];
     //private static int path_history_anz = 0;
@@ -129,16 +131,20 @@ public class BetterFileExplorer {
                     displayFilesAndFolder(window, folder);
                     window.path.setText(current_path);
                 } catch (FolderEmptyException e) {
-                    folder = new File(folder.getParent());
+                    folder = new File(old_path);
+                    current_path = old_path;
                     printMessage(window, 2, "Selected Folder is empty!", 2000);
                 } catch (IsNotAFolderException e) {
-                    folder = new File(folder.getParent());
+                    folder = new File(old_path);
+                    current_path = old_path;
                     printMessage(window, 1, "Cannot open this File!", 2000);
                 }
                 PATH_CHANGED_EVENT = false;
             }
             
             if (window.PATH_CHANGED == true) {
+                old_path = current_path;
+                
                 File file = new File(folder + "\\" + folders[window.SELECTED_PATH]);
                 
                 if (folders[window.SELECTED_PATH] == null) {
@@ -160,6 +166,28 @@ public class BetterFileExplorer {
 
                 
                 
+            }
+            
+            if (window.SHOW_SIZE_FOLDER_EVENT == true) {
+                
+                for (int i = 0; i < anz_folders; i++) {
+                    long buffer = getSizeOfFolder(new File(folder + folders[i]));
+                    String buffer_size = "";
+                    if (buffer < 1024)
+                        buffer_size = buffer + " Bytes";
+                    else if (buffer < 1024*1024)
+                        buffer_size = buffer/1024 + " KB";
+                    else if (buffer < 1024*1024*1024)
+                        buffer_size = String.format("%.2f", (double)buffer/1024/1024) + " MB";
+                    else if (buffer < (double)1024*1024*1024*1024)
+                        buffer_size = String.format("%.2f", (double)buffer/1024/1024/1024) + " GB";
+                    else
+                        buffer_size = String.format("%.2f", (double)buffer/1024/1024/1024/1024) + " TB";
+                    
+                    window.jTable1.getModel().setValueAt(buffer_size, i, 3);
+                }
+                
+                window.SHOW_SIZE_FOLDER_EVENT = false;
             }
             
             if (window.PATH_CHANGED_PARENT == true) {
@@ -189,12 +217,20 @@ public class BetterFileExplorer {
             window.jTable1.getModel().setValueAt(folders[i], i, 1);
             window.jTable1.getModel().setValueAt("Ordner", i, 2);
             window.jTable1.getModel().setValueAt("", i, 3);
+            window.jTable1.getModel().setValueAt("", i, 4);
+            if (Utilities.getHidden(new File(folder + folders[i]))) {
+                window.jTable1.getModel().setValueAt("Versteckter Ordner", i, 4);
+            }
             //window.jTable1.getModel().setValueAt((ImageIcon)icon_folder, i, 0);
         }
         for (i = 0; i < anz_files; i++) {
             //System.out.println(files[i] + " <- files[i]");
             files[i] = files[i].substring(folder.toString().length()+1, files[i].length());
             window.jTable1.getModel().setValueAt(files[i], i + anz_folders, 1);
+            window.jTable1.getModel().setValueAt("", i, 4);
+            if (Utilities.getHidden(new File(folder + folders[i]))) {
+                window.jTable1.getModel().setValueAt("Versteckte Datei", i, 4);
+            }
             
             long buffer = getSizeOfFile(new File(folder + "\\" + files[i]));
             String buffer_size = "";

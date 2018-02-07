@@ -44,6 +44,7 @@ public class MainWindow extends javax.swing.JFrame {
     public int SELECTED_PATH = -1;
     public boolean PATH_CHANGED_PARENT = false;
     public boolean PATH_CHANGED_NEXT = false;
+    public boolean SHOW_SIZE_FOLDER_EVENT = false;
     
     private int size_state = 0; // 0=not_fullscreen 1=fullscreen
     
@@ -94,10 +95,11 @@ public class MainWindow extends javax.swing.JFrame {
         button_new_folder = new javax.swing.JButton();
         button_new_file = new javax.swing.JButton();
         button_cmd = new javax.swing.JButton();
-        button_select = new javax.swing.JButton();
+        folder_size = new javax.swing.JButton();
         button_close = new javax.swing.JButton();
         button_maxmin = new javax.swing.JButton();
         button_minimize = new javax.swing.JButton();
+        button_select1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         button_new_file1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -265,20 +267,28 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             });
 
-            button_select.setBackground(new java.awt.Color(31, 165, 55));
-            button_select.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-            button_select.setForeground(new java.awt.Color(255, 255, 255));
-            button_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/select_titlebar.png"))); // NOI18N
-            button_select.setText("Auswählen");
-            button_select.setToolTipText("");
-            button_select.setBorder(null);
-            button_select.setIconTextGap(6);
-            button_select.addMouseListener(new java.awt.event.MouseAdapter() {
+            folder_size.setBackground(new java.awt.Color(31, 165, 55));
+            folder_size.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+            folder_size.setForeground(new java.awt.Color(255, 255, 255));
+            folder_size.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/select_titlebar.png"))); // NOI18N
+            folder_size.setText("Ordnergrößen");
+            folder_size.setToolTipText("");
+            folder_size.setBorder(null);
+            folder_size.setIconTextGap(6);
+            folder_size.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    folder_sizeMouseClicked(evt);
+                }
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    button_selectMouseEntered(evt);
+                    folder_sizeMouseEntered(evt);
                 }
                 public void mouseExited(java.awt.event.MouseEvent evt) {
-                    button_selectMouseExited(evt);
+                    folder_sizeMouseExited(evt);
+                }
+            });
+            folder_size.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    folder_sizeActionPerformed(evt);
                 }
             });
 
@@ -335,6 +345,23 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             });
 
+            button_select1.setBackground(new java.awt.Color(31, 165, 55));
+            button_select1.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+            button_select1.setForeground(new java.awt.Color(255, 255, 255));
+            button_select1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/select_titlebar.png"))); // NOI18N
+            button_select1.setText("Auswählen");
+            button_select1.setToolTipText("");
+            button_select1.setBorder(null);
+            button_select1.setIconTextGap(6);
+            button_select1.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    button_select1MouseEntered(evt);
+                }
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    button_select1MouseExited(evt);
+                }
+            });
+
             javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
             jPanel2.setLayout(jPanel2Layout);
             jPanel2Layout.setHorizontalGroup(
@@ -351,7 +378,9 @@ public class MainWindow extends javax.swing.JFrame {
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(button_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(button_select, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(button_select1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(folder_size, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(button_minimize, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, 0)
@@ -363,13 +392,14 @@ public class MainWindow extends javax.swing.JFrame {
                 jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(button_new_folder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_new_file, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                .addComponent(button_cmd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(button_select, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_close, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_maxmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_minimize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_back, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_next, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(button_select1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(button_cmd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(folder_size, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             );
 
             jPanel4.setBackground(new java.awt.Color(221, 221, 221));
@@ -655,13 +685,13 @@ public class MainWindow extends javax.swing.JFrame {
         //
     }//GEN-LAST:event_pathKeyPressed
 
-    private void button_selectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_selectMouseEntered
-        button_select.setBackground(new Color(28,150,48));
-    }//GEN-LAST:event_button_selectMouseEntered
+    private void folder_sizeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folder_sizeMouseEntered
+        folder_size.setBackground(new Color(28,150,48));
+    }//GEN-LAST:event_folder_sizeMouseEntered
 
-    private void button_selectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_selectMouseExited
-        button_select.setBackground(new Color(31,165,55));
-    }//GEN-LAST:event_button_selectMouseExited
+    private void folder_sizeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folder_sizeMouseExited
+        folder_size.setBackground(new Color(31,165,55));
+    }//GEN-LAST:event_folder_sizeMouseExited
 
     private void button_cmdMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_cmdMouseEntered
         button_cmd.setBackground(new Color(28,150,48));
@@ -717,6 +747,22 @@ public class MainWindow extends javax.swing.JFrame {
     private void button_nextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_nextMouseClicked
         PATH_CHANGED_NEXT = true;
     }//GEN-LAST:event_button_nextMouseClicked
+
+    private void button_select1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_select1MouseExited
+        button_select1.setBackground(new Color(31,165,55));
+    }//GEN-LAST:event_button_select1MouseExited
+
+    private void button_select1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_select1MouseEntered
+        button_select1.setBackground(new Color(28,150,48));
+    }//GEN-LAST:event_button_select1MouseEntered
+
+    private void folder_sizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folder_sizeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_folder_sizeActionPerformed
+
+    private void folder_sizeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folder_sizeMouseClicked
+        SHOW_SIZE_FOLDER_EVENT = true;
+    }//GEN-LAST:event_folder_sizeMouseClicked
 
     /*private void setScrollBars(JScrollPane pane) {
         setScrollBar(pane, JScrollBar.VERTICAL);
@@ -809,7 +855,8 @@ public class MainWindow extends javax.swing.JFrame {
     protected javax.swing.JButton button_new_file2;
     protected javax.swing.JButton button_new_folder;
     protected javax.swing.JButton button_next;
-    protected javax.swing.JButton button_select;
+    protected javax.swing.JButton button_select1;
+    protected javax.swing.JButton folder_size;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JList<String> jList1;
