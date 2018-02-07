@@ -35,7 +35,7 @@ public class Utilities {
                 success = true;
         }
         return success;
-    }
+    }//
     
     public static boolean copyFileArray(File[] src, Files dest, int copyOption) throws IOException{
         boolean success = true;
