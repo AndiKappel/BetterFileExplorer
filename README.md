@@ -1,3 +1,3 @@
 # BetterFileExplorer
 
-- by @MKozonits and @Kappel
+- by @MKozonits and @AndiKappel
