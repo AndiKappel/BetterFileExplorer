@@ -5,6 +5,7 @@
  */
 package com.kozonits.betterfileexplorer;
 
+import static com.kozonits.betterfileexplorer.Utilities.getSizeOfFile;
 import com.sun.corba.se.spi.activation._ActivatorImplBase;
 import com.sun.java.swing.plaf.windows.resources.windows;
 import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
@@ -110,8 +111,8 @@ public class BetterFileExplorer {
             
             if (((!current_path.equals(window.path.getText()) && window.changes == 1) || selected_changes) || PATH_CHANGED_EVENT) {
                 
-                if (current_path.equals("D:\\"))
-                    current_path = "D:";
+                if (current_path.length() < 4)
+                    current_path = current_path.replace(":\\", ":");
                 
                 System.out.println("Path: " + current_path + " Length: " + current_path.length());
                 updateHistory(curr_history);
@@ -139,9 +140,9 @@ public class BetterFileExplorer {
                 if (folders[window.SELECTED_PATH] == null || new File(folders[window.SELECTED_PATH]).isFile()) {
                     printMessage(window, 1, "Cannot open this File/Folder!", 2000);
                 } else {
-                    if (current_path.substring(current_path.length()-1).equals("\\"))
-                        current_path = folder + folders[window.SELECTED_PATH] + "\\";
-                    else
+//                    if (current_path.substring(current_path.length()-1).equals("\\"))
+//                        current_path = folder + folders[window.SELECTED_PATH] + "\\";
+//                    else
                         current_path = folder + "\\" + folders[window.SELECTED_PATH] + "\\";
                     PATH_CHANGED_EVENT = true;
                 }
@@ -181,12 +182,28 @@ public class BetterFileExplorer {
             folders[i] = folders[i].substring(folder.toString().length()+1, folders[i].length());
             window.jTable1.getModel().setValueAt(folders[i], i, 1);
             window.jTable1.getModel().setValueAt("Ordner", i, 2);
+            window.jTable1.getModel().setValueAt("", i, 3);
             //window.jTable1.getModel().setValueAt((ImageIcon)icon_folder, i, 0);
         }
         for (i = 0; i < anz_files; i++) {
             //System.out.println(files[i] + " <- files[i]");
             files[i] = files[i].substring(folder.toString().length()+1, files[i].length());
             window.jTable1.getModel().setValueAt(files[i], i + anz_folders, 1);
+            
+            long buffer = getSizeOfFile(new File(folder + "\\" + files[i]));
+            String buffer_size = "";
+            if (buffer < 1024)
+                buffer_size = buffer + " Bytes";
+            else if (buffer < 1024*1024)
+                buffer_size = buffer/1024 + " KB";
+            else if (buffer < 1024*1024*1024)
+                buffer_size = String.format("%.2f", (double)buffer/1024/1024) + " MB";
+            else if (buffer < (double)1024*1024*1024*1024)
+                buffer_size = String.format("%.2f", (double)buffer/1024/1024/1024) + " GB";
+            else
+                buffer_size = String.format("%.2f", (double)buffer/1024/1024/1024/1024) + " TB";
+            
+            window.jTable1.getModel().setValueAt(buffer_size, i + anz_folders, 3);
 
             if (!(files[i].lastIndexOf('.') == -1)) {
                 String att = files[i].substring(files[i].lastIndexOf('.'), files[i].length());
