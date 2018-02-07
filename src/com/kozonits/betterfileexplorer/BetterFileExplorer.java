@@ -10,7 +10,9 @@ import com.sun.corba.se.spi.activation._ActivatorImplBase;
 import com.sun.java.swing.plaf.windows.resources.windows;
 import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.ScrollBar;
@@ -52,7 +54,7 @@ public class BetterFileExplorer {
     
     private static ImageIcon icon_folder = new ImageIcon("ordner_list.png");
     
-    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException {
+    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException, IOException {
         
         //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         
@@ -137,15 +139,19 @@ public class BetterFileExplorer {
             }
             
             if (window.PATH_CHANGED == true) {
-                if (folders[window.SELECTED_PATH] == null || new File(folders[window.SELECTED_PATH]).isFile()) {
+                File file = new File(folder + "\\" + folders[window.SELECTED_PATH]);
+                
+                if (folders[window.SELECTED_PATH] == null) {
+                    System.out.println("folder: " + folders[window.SELECTED_PATH]);
                     printMessage(window, 1, "Cannot open this File/Folder!", 2000);
+                } else if (file.isFile()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    if(file.exists()) desktop.open(file);
                 } else {
-//                    if (current_path.substring(current_path.length()-1).equals("\\"))
-//                        current_path = folder + folders[window.SELECTED_PATH] + "\\";
-//                    else
-                        current_path = folder + "\\" + folders[window.SELECTED_PATH] + "\\";
+                    current_path = folder + "\\" + folders[window.SELECTED_PATH] + "\\";
                     PATH_CHANGED_EVENT = true;
                 }
+                
                 System.out.println("Path: " + current_path);
                 window.PATH_CHANGED = false;
             }

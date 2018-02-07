@@ -28,7 +28,7 @@ public class ComponentResizer extends MouseAdapter
 		cursors.put(6, Cursor.SW_RESIZE_CURSOR);
 		cursors.put(12, Cursor.SE_RESIZE_CURSOR);
 	}
-
+    
 	private Insets dragInsets;
 	private Dimension snapSize;
 
