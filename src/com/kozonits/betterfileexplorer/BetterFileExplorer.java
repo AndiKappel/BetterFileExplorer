@@ -110,6 +110,8 @@ public class BetterFileExplorer {
             
             if (((!current_path.equals(window.path.getText()) && window.changes == 1) || selected_changes) || PATH_CHANGED_EVENT) {
                 
+                if (current_path.length() == 3)
+                    current_path.replace("\\", "");
                 updateHistory(curr_history);
 
                 selected_changes = false;
