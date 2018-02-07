@@ -110,8 +110,10 @@ public class BetterFileExplorer {
             
             if (((!current_path.equals(window.path.getText()) && window.changes == 1) || selected_changes) || PATH_CHANGED_EVENT) {
                 
-                if (current_path.length() == 3)
-                    current_path.replace("\\", "");
+                if (current_path.equals("D:\\"))
+                    current_path = "D:";
+                
+                System.out.println("Path: " + current_path + " Length: " + current_path.length());
                 updateHistory(curr_history);
 
                 selected_changes = false;
@@ -122,7 +124,6 @@ public class BetterFileExplorer {
                     dtm.setRowCount(anz_files + anz_folders);
 
                     displayFilesAndFolder(window, folder);
-                    PATH_CHANGED_EVENT = false;
                     window.path.setText(current_path);
                 } catch (FolderEmptyException e) {
                     folder = new File(folder.getParent());
@@ -131,6 +132,7 @@ public class BetterFileExplorer {
                     folder = new File(folder.getParent());
                     printMessage(window, 1, "Cannot open this File!", 2000);
                 }
+                PATH_CHANGED_EVENT = false;
             }
             
             if (window.PATH_CHANGED == true) {
