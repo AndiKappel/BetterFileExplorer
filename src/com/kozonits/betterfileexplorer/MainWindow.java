@@ -24,6 +24,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalScrollBarUI;
 import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  *
@@ -53,6 +54,7 @@ public class MainWindow extends javax.swing.JFrame {
         initDragEvent();
         ComponentResizer cr = new ComponentResizer();
         cr.registerComponent(this);
+        this.setShape(new RoundRectangle2D.Double(0, 0, this.getSize().width, this.getSize().height, 20, 20));
     }
     
     private void initDragEvent() {
