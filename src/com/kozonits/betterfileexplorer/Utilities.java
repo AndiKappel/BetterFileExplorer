@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import static java.nio.file.StandardCopyOption.*;
+import java.util.Date;
 
 /**
  *
@@ -70,19 +71,43 @@ public class Utilities {
         return f.length();
     }
     
+    public static long getSizeOfFolder(File directory){
+        long length = 0;
+        for (File file : directory.listFiles()) {
+            if (file.isFile())
+                length += file.length();
+            else
+                length += getSizeOfFile(directory);
+        }
+        return length;
+    }
+    
+    public static boolean getHidden(File file){
+        if(file.isHidden())
+            return true;
+        return false;
+    }
+    
     public static String[][] getProperties(File f){
         String[][] properties = null;
-        
-        properties = new String[2][2];
+        Date d;
+        String date = "";
+        properties = new String[4][2];
         properties[0][0] = f.getName();
         properties[0][1] = f.getPath();
         
         properties[1][0] = Long.toString(f.length());
         properties[1][1] = Long.toString(f.getFreeSpace());      
         
-        properties[2][0] = Long.toString(f.lastModified());
+        d = new Date(f.lastModified());
+        date = date + d.getDay() + "." + d.getMonth() + "." + d.getYear();
+        
+        properties[2][0] = date;
         properties[2][1] = "" + f.canRead()+ ";" + f.canWrite() + ";" + f.canExecute();
         
+        properties[3][0] = Boolean.toString(f.isHidden());
+        properties[3][1] = f.getAbsolutePath();
+           
         return properties;
     }
     
