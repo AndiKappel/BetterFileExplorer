@@ -54,7 +54,7 @@ public class MainWindow extends javax.swing.JFrame {
         initDragEvent();
         ComponentResizer cr = new ComponentResizer();
         cr.registerComponent(this);
-        this.setShape(new RoundRectangle2D.Double(0, 0, this.getSize().width, this.getSize().height, 20, 20));
+        //this.setShape(new RoundRectangle2D.Double(0, 0, this.getSize().width, this.getSize().height, 20, 20));
     }
     
     private void initDragEvent() {
