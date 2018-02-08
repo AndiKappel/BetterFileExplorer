@@ -7,6 +7,9 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -117,11 +120,16 @@ public class BetterFileExplorer {
                 System.out.println("Folder: " + file.getPath());
                 
                 if (folders[window.SELECTED_PATH] == null) {
-                    file = new File(folder + "\\" + files[window.SELECTED_PATH - anz_folders] + window.jTable1.getModel().getValueAt(window.SELECTED_PATH, 2));
+                    if (window.SELECTED_PATH - anz_folders >= 0 && window.SELECTED_PATH - anz_folders < files.length);
+                        file = new File(folder + "\\" + files[window.SELECTED_PATH - anz_folders] + window.jTable1.getModel().getValueAt(window.SELECTED_PATH, 2));
                     System.out.println("File: " + file.getPath());
                     if (file.isFile()) {
-                        Desktop desktop = Desktop.getDesktop();
-                        if(file.exists()) desktop.open(file);
+                        try {
+                            Desktop desktop = Desktop.getDesktop();
+                            if(file.exists()) desktop.open(file);
+                        } catch (IOException ex) {
+                            printMessage(window, 2, "Cannot open this File! Go to Settings > Apps > Default-Apps > Select Default App by Type of File > " + window.jTable1.getModel().getValueAt(window.SELECTED_PATH, 2) + "!", 4000);
+                        }
                     } else {
                         System.out.println("folder: " + folders[window.SELECTED_PATH]);
                         printMessage(window, 1, "Cannot open this File/Folder!", 2000);
@@ -177,6 +185,14 @@ public class BetterFileExplorer {
             if ((end_time < System.currentTimeMillis() && end_time != -1) || FIRST_EVENT) {
                 resetMessage(window);
                 FIRST_EVENT = false;
+            }
+            
+            if (end_time == -1) {
+                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                Date d = new Date();
+                window.date_time.setText(dateFormat.format(d));
+            } else {
+                window.date_time.setText("");
             }
             
             while((System.nanoTime()-start) < 16000); //END-TIME and CHECK for FRAME-CALCULATION -> 16000 ns = max. 60fps
