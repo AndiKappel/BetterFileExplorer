@@ -114,13 +114,18 @@ public class BetterFileExplorer {
                 old_path = current_path;
                 
                 File file = new File(folder + "\\" + folders[window.SELECTED_PATH]);
+                System.out.println("Folder: " + file.getPath());
                 
                 if (folders[window.SELECTED_PATH] == null) {
-                    System.out.println("folder: " + folders[window.SELECTED_PATH]);
-                    printMessage(window, 1, "Cannot open this File/Folder!", 2000);
-                } else if (file.isFile()) {
-                    Desktop desktop = Desktop.getDesktop();
-                    if(file.exists()) desktop.open(file);
+                    file = new File(folder + "\\" + files[window.SELECTED_PATH - anz_folders] + window.jTable1.getModel().getValueAt(window.SELECTED_PATH, 2));
+                    System.out.println("File: " + file.getPath());
+                    if (file.isFile()) {
+                        Desktop desktop = Desktop.getDesktop();
+                        if(file.exists()) desktop.open(file);
+                    } else {
+                        System.out.println("folder: " + folders[window.SELECTED_PATH]);
+                        printMessage(window, 1, "Cannot open this File/Folder!", 2000);
+                    }
                 } else {
                     current_path = folder + "\\" + folders[window.SELECTED_PATH] + "\\";
                     PATH_CHANGED_EVENT = true;
