@@ -32,10 +32,9 @@ public class BetterFileExplorer {
     private static String curr_history;
     
     private static boolean PATH_CHANGED_EVENT = false;
+    private static boolean FIRST_EVENT = true;
     
     private static long end_time = -1;
-    
-    private static final ImageIcon icon_folder = new ImageIcon("ordner_list.png");
     
     public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException, IOException {
         
@@ -108,6 +107,7 @@ public class BetterFileExplorer {
                     printMessage(window, 1, "Cannot open this File!", 2000);
                 }
                 PATH_CHANGED_EVENT = false;
+                FIRST_EVENT = true;
             }
             
             if (window.PATH_CHANGED == true) {
@@ -174,8 +174,9 @@ public class BetterFileExplorer {
                 window.PATH_CHANGED_PARENT = false;
             }
             
-            if (end_time < System.currentTimeMillis() && end_time != -1) {
+            if ((end_time < System.currentTimeMillis() && end_time != -1) || FIRST_EVENT) {
                 resetMessage(window);
+                FIRST_EVENT = false;
             }
             
             while((System.nanoTime()-start) < 16000); //END-TIME and CHECK for FRAME-CALCULATION -> 16000 ns = max. 60fps
@@ -187,10 +188,14 @@ public class BetterFileExplorer {
 
         for (i = 0; i < anz_folders; i++) {
             folders[i] = folders[i].substring(folder.toString().length()+1, folders[i].length());
+            
             window.jTable1.getModel().setValueAt(folders[i], i, 1);
             window.jTable1.getModel().setValueAt("Ordner", i, 2);
             window.jTable1.getModel().setValueAt("", i, 3);
             window.jTable1.getModel().setValueAt("", i, 4);
+            
+            window.jTable1.getModel().setValueAt("ordner_list.png", i, 0);
+            
             if (Utilities.getHidden(new File(folder + folders[i]))) {
                 window.jTable1.getModel().setValueAt("Versteckter Ordner", i, 4);
             }
@@ -200,9 +205,10 @@ public class BetterFileExplorer {
 
             files[i] = files[i].substring(folder.toString().length()+1, files[i].length());
             window.jTable1.getModel().setValueAt(files[i], i + anz_folders, 1);
-            window.jTable1.getModel().setValueAt("", i, 4);
+            window.jTable1.getModel().setValueAt("", i + anz_folders, 4);
+            window.jTable1.getModel().setValueAt("file_list.png", i + anz_folders, 0);
             if (Utilities.getHidden(new File(folder + folders[i]))) {
-                window.jTable1.getModel().setValueAt("Versteckte Datei", i, 4);
+                window.jTable1.getModel().setValueAt("Versteckte Datei", i + anz_folders, 4);
             }
             
             long buffer = getSizeOfFile(new File(folder + "\\" + files[i]));
@@ -276,7 +282,7 @@ public class BetterFileExplorer {
     public static void resetMessage(MainWindow win) {
         win.stateBar.setBackground(new Color(234,234,234));
         win.stateText.setForeground(new Color(50,50,50));
-        win.stateText.setText("Nothing Selected!");
+        win.stateText.setText(anz_files + " File(s) and " + anz_folders + " Folder(s)");
     }
     
     public static void updateHistory(String path) {
