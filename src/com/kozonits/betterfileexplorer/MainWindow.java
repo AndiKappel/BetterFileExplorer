@@ -24,6 +24,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalScrollBarUI;
 import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
+import java.awt.geom.RoundRectangle2D;
+import javax.swing.JLabel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -44,12 +47,33 @@ public class MainWindow extends javax.swing.JFrame {
     public int SELECTED_PATH = -1;
     public boolean PATH_CHANGED_PARENT = false;
     public boolean PATH_CHANGED_NEXT = false;
+    public boolean SHOW_SIZE_FOLDER_EVENT = false;
+    public boolean DARK_MODE_CHANGED_EVENT = false;
+    public boolean DARK_MODE = false;
+    
+    //COLOR LIGHT MODE
+    private static Color p4color_light = new Color(221, 221, 221);
+    private static Color p5color_light = new Color(240, 240, 240);
+    private static Color fontcolor_light = new Color(50, 50, 50);
+    
+    //COLOR DARK MODE
+    private static Color p4color_dark = new Color(43, 43, 43);
+    private static Color p5color_dark = new Color(15, 15, 15);
+    private static Color fontcolor_dark = new Color(240, 240, 240);
     
     private int size_state = 0; // 0=not_fullscreen 1=fullscreen
     
     public MainWindow() {
         initComponents();
         initDragEvent();
+        ComponentResizer cr = new ComponentResizer();
+        cr.registerComponent(this);
+        this.jTable1.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
+        
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+        jTable1.setDefaultRenderer(JLabel.class, centerRenderer);
+        
     }
     
     private void initDragEvent() {
@@ -92,17 +116,19 @@ public class MainWindow extends javax.swing.JFrame {
         button_new_folder = new javax.swing.JButton();
         button_new_file = new javax.swing.JButton();
         button_cmd = new javax.swing.JButton();
-        button_select = new javax.swing.JButton();
         button_close = new javax.swing.JButton();
         button_maxmin = new javax.swing.JButton();
         button_minimize = new javax.swing.JButton();
+        button_select1 = new javax.swing.JButton();
+        folder_size1 = new javax.swing.JButton();
+        dark_mode = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
-        button_new_file1 = new javax.swing.JButton();
+        start = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        button_new_file2 = new javax.swing.JButton();
+        fav = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        fav_list = new javax.swing.JList<>();
         jPanel5 = new javax.swing.JPanel();
         LookAndFeel previousLF = UIManager.getLookAndFeel();
         try {
@@ -113,6 +139,7 @@ public class MainWindow extends javax.swing.JFrame {
             jTable1 = new javax.swing.JTable();
             stateBar = new javax.swing.JPanel();
             stateText = new javax.swing.JLabel();
+            date_time = new javax.swing.JLabel();
 
             setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
             setTitle("BetterFileExplorer");
@@ -263,23 +290,6 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             });
 
-            button_select.setBackground(new java.awt.Color(31, 165, 55));
-            button_select.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-            button_select.setForeground(new java.awt.Color(255, 255, 255));
-            button_select.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/select_titlebar.png"))); // NOI18N
-            button_select.setText("Auswählen");
-            button_select.setToolTipText("");
-            button_select.setBorder(null);
-            button_select.setIconTextGap(6);
-            button_select.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    button_selectMouseEntered(evt);
-                }
-                public void mouseExited(java.awt.event.MouseEvent evt) {
-                    button_selectMouseExited(evt);
-                }
-            });
-
             button_close.setBackground(new java.awt.Color(31, 165, 55));
             button_close.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/close.png"))); // NOI18N
             button_close.setToolTipText("");
@@ -333,6 +343,73 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             });
 
+            button_select1.setBackground(new java.awt.Color(31, 165, 55));
+            button_select1.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+            button_select1.setForeground(new java.awt.Color(255, 255, 255));
+            button_select1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/select_titlebar.png"))); // NOI18N
+            button_select1.setText("Auswählen");
+            button_select1.setToolTipText("");
+            button_select1.setBorder(null);
+            button_select1.setIconTextGap(6);
+            button_select1.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    button_select1MouseEntered(evt);
+                }
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    button_select1MouseExited(evt);
+                }
+            });
+
+            folder_size1.setBackground(new java.awt.Color(31, 165, 55));
+            folder_size1.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+            folder_size1.setForeground(new java.awt.Color(255, 255, 255));
+            folder_size1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/folder_size.png"))); // NOI18N
+            folder_size1.setText("Ordnergrößen");
+            folder_size1.setToolTipText("");
+            folder_size1.setBorder(null);
+            folder_size1.setIconTextGap(6);
+            folder_size1.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    folder_size1MouseClicked(evt);
+                }
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    folder_size1MouseEntered(evt);
+                }
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    folder_size1MouseExited(evt);
+                }
+            });
+            folder_size1.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    folder_size1ActionPerformed(evt);
+                }
+            });
+
+            dark_mode.setBackground(new java.awt.Color(31, 165, 55));
+            dark_mode.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+            dark_mode.setForeground(new java.awt.Color(255, 255, 255));
+            dark_mode.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/dark_mode.png"))); // NOI18N
+            dark_mode.setText("Dark-Mode");
+            dark_mode.setToolTipText("");
+            dark_mode.setBorder(null);
+            dark_mode.setIconTextGap(6);
+            dark_mode.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    dark_modeMouseClicked(evt);
+                }
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    dark_modeMouseEntered(evt);
+                }
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    dark_modeMouseExited(evt);
+                }
+            });
+            dark_mode.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    dark_modeActionPerformed(evt);
+                }
+            });
+
             javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
             jPanel2.setLayout(jPanel2Layout);
             jPanel2Layout.setHorizontalGroup(
@@ -349,7 +426,11 @@ public class MainWindow extends javax.swing.JFrame {
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(button_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(button_select, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(button_select1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(folder_size1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(dark_mode, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(button_minimize, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, 0)
@@ -361,54 +442,56 @@ public class MainWindow extends javax.swing.JFrame {
                 jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(button_new_folder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_new_file, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                .addComponent(button_cmd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(button_select, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_close, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_maxmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_minimize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_back, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button_next, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(button_cmd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(button_select1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(dark_mode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(folder_size1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             );
 
             jPanel4.setBackground(new java.awt.Color(221, 221, 221));
 
-            button_new_file1.setBackground(new java.awt.Color(221, 221, 221));
-            button_new_file1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-            button_new_file1.setForeground(new java.awt.Color(64, 64, 64));
-            button_new_file1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/start_fav.png"))); // NOI18N
-            button_new_file1.setText("Mein PC");
-            button_new_file1.setToolTipText("");
-            button_new_file1.setBorder(null);
-            button_new_file1.setIconTextGap(9);
+            start.setBackground(new java.awt.Color(221, 221, 221));
+            start.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+            start.setForeground(new java.awt.Color(64, 64, 64));
+            start.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/start_fav.png"))); // NOI18N
+            start.setText("Mein PC");
+            start.setToolTipText("");
+            start.setBorder(null);
+            start.setIconTextGap(9);
 
             jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/arrow_fav.png"))); // NOI18N
 
-            button_new_file2.setBackground(new java.awt.Color(221, 221, 221));
-            button_new_file2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-            button_new_file2.setForeground(new java.awt.Color(64, 64, 64));
-            button_new_file2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/ordner_list.png"))); // NOI18N
-            button_new_file2.setText("Favoriten");
-            button_new_file2.setToolTipText("");
-            button_new_file2.setBorder(null);
-            button_new_file2.setIconTextGap(9);
+            fav.setBackground(new java.awt.Color(221, 221, 221));
+            fav.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+            fav.setForeground(new java.awt.Color(64, 64, 64));
+            fav.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/ordner_list.png"))); // NOI18N
+            fav.setText("Favoriten");
+            fav.setToolTipText("");
+            fav.setBorder(null);
+            fav.setIconTextGap(9);
 
             jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/kozonits/betterfileexplorer/arrow_fav.png"))); // NOI18N
 
             jScrollPane2.setBorder(null);
 
-            jList1.setBackground(new java.awt.Color(221, 221, 221));
-            jList1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
-            jList1.setForeground(new java.awt.Color(64, 64, 64));
-            jList1.setModel(new javax.swing.AbstractListModel<String>() {
+            fav_list.setBackground(new java.awt.Color(221, 221, 221));
+            fav_list.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+            fav_list.setForeground(new java.awt.Color(64, 64, 64));
+            fav_list.setModel(new javax.swing.AbstractListModel<String>() {
                 String[] strings = { "Dokumente", "Bilder", "Videos", "Desktop" };
                 public int getSize() { return strings.length; }
                 public String getElementAt(int i) { return strings[i]; }
             });
-            jList1.setToolTipText("");
-            jList1.setFixedCellHeight(20);
-            jList1.setSelectionBackground(new java.awt.Color(200, 200, 200));
-            jList1.setSelectionForeground(new java.awt.Color(64, 64, 64));
-            jScrollPane2.setViewportView(jList1);
+            fav_list.setToolTipText("");
+            fav_list.setFixedCellHeight(20);
+            fav_list.setSelectionBackground(new java.awt.Color(200, 200, 200));
+            fav_list.setSelectionForeground(new java.awt.Color(64, 64, 64));
+            jScrollPane2.setViewportView(fav_list);
 
             javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
             jPanel4.setLayout(jPanel4Layout);
@@ -419,7 +502,7 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(jPanel4Layout.createSequentialGroup()
                             .addComponent(jLabel1)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(button_new_file1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(start, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel4Layout.createSequentialGroup()
                             .addComponent(jLabel2)
                             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -428,7 +511,7 @@ public class MainWindow extends javax.swing.JFrame {
                                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel4Layout.createSequentialGroup()
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(button_new_file2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                    .addComponent(fav, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addContainerGap(114, Short.MAX_VALUE))
             );
             jPanel4Layout.setVerticalGroup(
@@ -439,13 +522,13 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(jPanel4Layout.createSequentialGroup()
                             .addGap(8, 8, 8)
                             .addComponent(jLabel1))
-                        .addComponent(button_new_file1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(start, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGap(18, 18, 18)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel4Layout.createSequentialGroup()
                             .addGap(8, 8, 8)
                             .addComponent(jLabel2))
-                        .addComponent(button_new_file2, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(fav, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(453, Short.MAX_VALUE))
@@ -520,6 +603,10 @@ public class MainWindow extends javax.swing.JFrame {
         stateText.setForeground(new java.awt.Color(50, 50, 50));
         stateText.setText("No Files/Folder selected.");
 
+        date_time.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
+        date_time.setForeground(new java.awt.Color(50, 50, 50));
+        date_time.setText("Date and Time");
+
         javax.swing.GroupLayout stateBarLayout = new javax.swing.GroupLayout(stateBar);
         stateBar.setLayout(stateBarLayout);
         stateBarLayout.setHorizontalGroup(
@@ -527,11 +614,15 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(stateBarLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(stateText)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(date_time)
+                .addContainerGap())
         );
         stateBarLayout.setVerticalGroup(
             stateBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(stateText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, stateBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(stateText, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+                .addComponent(date_time))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -653,14 +744,6 @@ public class MainWindow extends javax.swing.JFrame {
         //
     }//GEN-LAST:event_pathKeyPressed
 
-    private void button_selectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_selectMouseEntered
-        button_select.setBackground(new Color(28,150,48));
-    }//GEN-LAST:event_button_selectMouseEntered
-
-    private void button_selectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_selectMouseExited
-        button_select.setBackground(new Color(31,165,55));
-    }//GEN-LAST:event_button_selectMouseExited
-
     private void button_cmdMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_cmdMouseEntered
         button_cmd.setBackground(new Color(28,150,48));
     }//GEN-LAST:event_button_cmdMouseEntered
@@ -715,6 +798,65 @@ public class MainWindow extends javax.swing.JFrame {
     private void button_nextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_nextMouseClicked
         PATH_CHANGED_NEXT = true;
     }//GEN-LAST:event_button_nextMouseClicked
+
+    private void button_select1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_select1MouseExited
+        button_select1.setBackground(new Color(31,165,55));
+    }//GEN-LAST:event_button_select1MouseExited
+
+    private void button_select1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_select1MouseEntered
+        button_select1.setBackground(new Color(28,150,48));
+    }//GEN-LAST:event_button_select1MouseEntered
+
+    private void folder_size1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folder_size1MouseClicked
+        SHOW_SIZE_FOLDER_EVENT = true;
+    }//GEN-LAST:event_folder_size1MouseClicked
+
+    private void folder_size1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folder_size1MouseEntered
+        folder_size1.setBackground(new Color(28,150,48));
+    }//GEN-LAST:event_folder_size1MouseEntered
+
+    private void folder_size1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folder_size1MouseExited
+        folder_size1.setBackground(new Color(31,165,55));
+    }//GEN-LAST:event_folder_size1MouseExited
+
+    private void folder_size1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folder_size1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_folder_size1ActionPerformed
+
+    private void dark_modeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dark_modeMouseClicked
+
+        DARK_MODE = !DARK_MODE;
+        
+        if (window.DARK_MODE) {
+            jPanel4.setBackground(p4color_dark);
+            jPanel5.setBackground(p5color_dark);
+            jTable1.setForeground(fontcolor_dark);
+            jTable1.setBackground(p5color_dark);
+            start.setForeground(fontcolor_dark);
+            fav.setForeground(fontcolor_dark);
+            fav_list.setForeground(fontcolor_dark);
+        } else {
+            jPanel4.setBackground(p4color_light);
+            jPanel5.setBackground(p5color_light);
+            jTable1.setForeground(fontcolor_light);
+            jTable1.setBackground(p5color_light);
+            start.setForeground(fontcolor_light);
+            fav.setForeground(fontcolor_light);
+            fav_list.setForeground(fontcolor_light);
+        }
+    }//GEN-LAST:event_dark_modeMouseClicked
+
+    private void dark_modeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dark_modeMouseEntered
+        dark_mode.setBackground(new Color(28,150,48));
+    }//GEN-LAST:event_dark_modeMouseEntered
+
+    private void dark_modeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dark_modeMouseExited
+        dark_mode.setBackground(new Color(31,165,55));
+    }//GEN-LAST:event_dark_modeMouseExited
+
+    private void dark_modeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dark_modeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dark_modeActionPerformed
 
     /*private void setScrollBars(JScrollPane pane) {
         setScrollBar(pane, JScrollBar.VERTICAL);
@@ -803,24 +945,27 @@ public class MainWindow extends javax.swing.JFrame {
     protected javax.swing.JButton button_maxmin;
     protected javax.swing.JButton button_minimize;
     protected javax.swing.JButton button_new_file;
-    protected javax.swing.JButton button_new_file1;
-    protected javax.swing.JButton button_new_file2;
     protected javax.swing.JButton button_new_folder;
     protected javax.swing.JButton button_next;
-    protected javax.swing.JButton button_select;
+    protected javax.swing.JButton button_select1;
+    protected javax.swing.JButton dark_mode;
+    public javax.swing.JLabel date_time;
+    public javax.swing.JButton fav;
+    public javax.swing.JList<String> fav_list;
+    protected javax.swing.JButton folder_size1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
+    public javax.swing.JPanel jPanel4;
+    public javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     public javax.swing.JTable jTable1;
     private javax.swing.JLabel label_folder_pathbar;
     public javax.swing.JTextField path;
+    public javax.swing.JButton start;
     public javax.swing.JPanel stateBar;
     public javax.swing.JLabel stateText;
     // End of variables declaration//GEN-END:variables

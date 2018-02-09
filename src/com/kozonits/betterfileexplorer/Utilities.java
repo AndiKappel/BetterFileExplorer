@@ -74,17 +74,6 @@ public class Utilities {
     public static long getSizeOfFolder(File directory){
         long length = 0;
 
-        if(directory == null || directory.isHidden())
-            return length;
-        
-        File[] filelist = directory.listFiles();
-        if(filelist.length == 0)
-            return length;
-        for (int i = 0; i < filelist.length; i++) {
-            if (filelist[i].isDirectory()) {
-                length += getSizeOfFolder(filelist[i]);
-            } else {
-                length += filelist[i].length();
             }
         }
         return length;
