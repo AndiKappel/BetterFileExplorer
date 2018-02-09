@@ -73,19 +73,25 @@ public class Utilities {
     
     public static long getSizeOfFolder(File directory){
         long length = 0;
-        for (File file : directory.listFiles()) {
-            if (file.isFile())
-                length += file.length();
-            else
-                length += getSizeOfFile(directory);
+
+        if(directory == null || directory.isHidden())
+            return length;
+        
+        File[] filelist = directory.listFiles();
+        if(filelist.length == 0)
+            return length;
+        for (int i = 0; i < filelist.length; i++) {
+            if (filelist[i].isDirectory()) {
+                length += getSizeOfFolder(filelist[i]);
+            } else {
+                length += filelist[i].length();
+            }
         }
         return length;
     }
     
     public static boolean getHidden(File file){
-        if(file.isHidden())
-            return true;
-        return false;
+        return file.isHidden();
     }
     
     public static String[][] getProperties(File f){
@@ -128,5 +134,34 @@ public class Utilities {
         for(int i = 0; i < f.length; i++)
             success = f[i].delete();
         return success;
+    }
+    
+    public static boolean openCMD(File f){
+        String[] cmd = {"C:\\WINDOWS\\system32\\cmd.exe","/c","start", "cd", f.getPath()};
+        boolean success = false;
+        
+        try {        
+            Runtime runtime = Runtime.getRuntime();
+            Process p = runtime.exec(cmd);
+            success = true;
+        }
+        catch (java.io.IOException exception) {
+            System.out.println("IOException: " + exception.getMessage());
+        }
+        return success;
+    }
+       
+    public static boolean createFile(File dir, String fileName) throws IOException{
+        File f = new File(dir.getPath() + "/" + fileName);
+        if(f.isDirectory())
+            return false;
+        return f.createNewFile();
+    }
+    
+    public static boolean createDirectory(File dir, String dirName){
+        File directory = new File(dir.getPath() + "/" + dirName);
+        if(directory.isDirectory())
+            return false;
+        return directory.mkdir();
     }
 }
